@@ -1,11 +1,9 @@
 # SwiftSVGA
 
-[![CI Status](https://img.shields.io/travis/zaishi/SwiftSVGA.svg?style=flat)](https://travis-ci.org/zaishi/SwiftSVGA)
-[![Version](https://img.shields.io/cocoapods/v/SwiftSVGA.svg?style=flat)](https://cocoapods.org/pods/SwiftSVGA)
-[![License](https://img.shields.io/cocoapods/l/SwiftSVGA.svg?style=flat)](https://cocoapods.org/pods/SwiftSVGA)
-[![Platform](https://img.shields.io/cocoapods/p/SwiftSVGA.svg?style=flat)](https://cocoapods.org/pods/SwiftSVGA)
+Check [https://github.com/svga](https://github.com/svga) for more information.
 
-see [https://github.com/svga](https://github.com/svga)
+This package is a Swift rewrite of the [SVGAPlayer-iOS](https://github.com/svga/SVGAPlayer-iOS) project, with Swift
+Package Manager support.
 
 ## Example
 
@@ -13,7 +11,22 @@ To run the example project, clone the repo, and run `pod install` from the Examp
 
 ## Requirements
 
+For SPM support, the minimum version of iOS is 12.0.
+
 ## Installation
+
+### Swift Package Manager
+
+SwiftSVGA is available through [Swift Package Manager](https://swift.org/package-manager/). To install
+it, simply add the following line to your Package.swift:
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/WendellXY/SwiftSVGA.git", branch: "master")
+]
+```
+
+### CocoaPods
 
 SwiftSVGA is available through [CocoaPods](https://cocoapods.org). To install
 it, simply add the following line to your Podfile:
@@ -24,7 +37,8 @@ pod 'SwiftSVGA'
 
 ## Author
 
-zaishi, zaishi.huang@gmail.com
+zaishi, <zaishi.huang@gmail.com>
+Wendell, <root@tzeentch.io>
 
 ## License
 
