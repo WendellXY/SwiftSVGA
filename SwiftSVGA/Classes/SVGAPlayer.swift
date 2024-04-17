@@ -1,5 +1,5 @@
 //
-//  SVGAView.swift
+//  SVGAPlayer.swift
 //  Pods
 //
 //  Created by clovelu on 2020/6/30.
@@ -9,21 +9,27 @@ import QuartzCore
 import SwiftProtobuf
 import UIKit
 
-open class SVGAView: UIView {
-  public typealias OnDidLoadHandle = (_ view: SVGAView, _ svga: SVGAMovieEntity?) -> Void
-  public typealias OnUpdateHandle = (_ view: SVGAView, _ curIndex: Int, _ curLoop: Int) -> Void
-  public typealias OnAnimatingChangeHandle = (_ view: SVGAView, _ new: Bool, _ old: Bool) -> Void
-  public typealias OnPlayFinishedHandle = (_ view: SVGAView, _ loop: Int) -> Void
+open class SVGAPlayer: UIView {
+  public typealias OnDidLoadHandle = (_ view: SVGAPlayer, _ svga: SVGAMovieEntity?) -> Void
+  public typealias OnUpdateHandle = (_ view: SVGAPlayer, _ curIndex: Int, _ curLoop: Int) -> Void
+  public typealias OnAnimatingChangeHandle = (_ view: SVGAPlayer, _ new: Bool, _ old: Bool) -> Void
+  public typealias OnPlayFinishedHandle = (_ view: SVGAPlayer, _ loop: Int) -> Void
 
   public class WeakLinkDelegate: NSObject {
-    weak var base: SVGAView?
-    init(_ base: SVGAView?) {
+    weak var base: SVGAPlayer?
+    init(_ base: SVGAPlayer?) {
       self.base = base
     }
     @objc public func step(link: CADisplayLink) {
       base?.step(link: link)
     }
   }
+
+  public protocol Delegate: AnyObject {
+    func didFinishAnimation(player: SVGAPlayer, loop: Int)
+  }
+
+  public weak var delegate: (any Delegate)?
 
   public private(set) var displayLink: CADisplayLink?
   public private(set) lazy var drawLayer: CALayer = {
@@ -39,7 +45,7 @@ open class SVGAView: UIView {
   open private(set) var dynamicHiddenMap: [String: Bool] = [:]
 
   open var autoPlayIfMove: Bool = true
-  open var fillModel: FillModel = .forwards
+  open var fillMode: FillMode = .forward
   open var totalLoop: Int = 0
   open private(set) var curIndex: Int = 0
   open private(set) var curLoop: Int = 0
@@ -213,15 +219,15 @@ open class SVGAView: UIView {
   }
 
   open func playDidFinished() {
-    switch fillModel {
-    case .forwards: break
-    case .backwards:
+    switch fillMode {
+    case .forward: break
+    case .backward:
       moveFrame(to: 0)
     case .clear:
       drawLayer.isHidden = true
     }
 
-    self.onPlayFinishedHandle?(self, curLoop)
+    self.delegate?.didFinishAnimation(player: self, loop: curLoop)
   }
 
   open func moveFrame(to index: Int, play: Bool = false) {
@@ -428,7 +434,7 @@ protocol SVGAViewDynamicable {
   func clearDynamic()
 }
 
-extension SVGAView: SVGAViewDynamicable {
+extension SVGAPlayer: SVGAViewDynamicable {
   public func setImage(_ image: UIImage?, key: String) {
     if image == nil {
       dynamicImages.removeValue(forKey: key)
@@ -458,15 +464,15 @@ extension SVGAView: SVGAViewDynamicable {
   }
 }
 
-extension SVGAView {
-  public enum FillModel {
-    case forwards
-    case backwards
+extension SVGAPlayer {
+  public enum FillMode {
+    case forward
+    case backward
     case clear
   }
 }
 
-extension SVGAView {
+extension SVGAPlayer {
   public func setURLString(_ urlString: String?, handle: CompletionHandler? = nil) {
     let url = urlString != nil ? URL(string: urlString!) : nil
     setURL(url, handle: handle)
